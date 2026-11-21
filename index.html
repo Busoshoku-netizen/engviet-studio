@@ -3,36 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EngViet Studio & AI Mentor - Học Tiếng Anh cho Người Việt</title>
+  <title>EngViet Studio — Học Tiếng Anh & AI Mentor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
-      background-color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 45%, #f1f5f9 100%);
+      color: #0f172a;
+      min-height: 100vh;
     }
-    .perspective-1000 { perspective: 1000px; }
+    .perspective-1000 { perspective: 1200px; }
     .transform-style-3d { transform-style: preserve-3d; }
     .backface-hidden {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
     .rotate-y-180 { transform: rotateY(180deg); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useRef } = React;
+    const { useState, useRef, useEffect } = React;
 
     // --- DỮ LIỆU HỌC TẬP ---
     const WORD_OF_THE_DAY = {
       word: "resilient",
       ipa: "/rɪˈzɪl.i.ənt/",
-      pos: "tính từ (adj)",
+      pos: "tính từ",
       meaning: "Kiên cường, có khả năng phục hồi nhanh sau khó khăn hoặc thất bại.",
       example: "Vietnamese students are remarkably resilient when tackling tough exams.",
       exampleVi: "Học sinh Việt Nam cực kỳ kiên cường khi đối mặt với những kỳ thi khó."
@@ -153,7 +158,7 @@
         level: "A2 - B1",
         audioText: "Hi, could we get a quiet table near the window? Also, is the iced coffee very sweet?",
         viTranscript: "Chào bạn, bọn mình có thể ngồi bàn yên tĩnh gần cửa sổ không? Với lại, cà phê đá có ngọt lắm không?",
-        keyTips: "Nối âm 'get a' -> /ˈɡe.tə/, chú ý âm cuối /t/ ở 'quiet' và 'sweet'."
+        keyTips: "Nối âm 'get a' thành /ˈɡe.tə/, bật rõ âm cuối /t/ ở 'quiet' và 'sweet'."
       },
       {
         id: "l2",
@@ -161,7 +166,7 @@
         level: "B1 - B2",
         audioText: "I finished the slides earlier than expected, so we have plenty of time to rehearse.",
         viTranscript: "Mình làm xong slide sớm hơn dự kiến, nên bọn mình có nhiều thời gian tập dượt.",
-        keyTips: "Chú ý đuôi '-ed' đọc là /t/ trong 'finished' và nối âm 'plenty of' -> /ˈplen.ti.əv/."
+        keyTips: "Đuôi '-ed' đọc là /t/ trong 'finished' và nối âm 'plenty of' thành /ˈplen.ti.əv/."
       }
     ];
 
@@ -176,13 +181,13 @@
         id: "s2",
         phrase: "We need to finish these tasks before six.",
         vi: "Chúng ta cần hoàn thành các công việc này trước 6 giờ.",
-        tip: "Người Việt dễ nuốt âm /s/ ở 'tasks' (/tɑːsks/) và âm /ks/ ở 'six'."
+        tip: "Chú ý không nuốt âm /s/ ở 'tasks' (/tɑːsks/) và âm /ks/ ở 'six'."
       },
       {
         id: "s3",
         phrase: "It was a challenging month, yet we pulled it through.",
         vi: "Đó là một tháng đầy thử thách, nhưng chúng ta đã vượt qua.",
-        tip: "Đọc rõ âm /θ/ (đặt đầu lưỡi giữa hai hàm răng) trong từ 'month' và 'through'."
+        tip: "Đặt đầu lưỡi giữa hai hàm răng khi đọc âm /θ/ trong từ 'month' và 'through'."
       }
     ];
 
@@ -192,7 +197,7 @@
         title: "Why Slow Reading Beats Skimming",
         level: "B1",
         tokens: [
-          { text: "Many", word: "many", ipa: "/ˈmen.i/", meaning: "nhiều (dùng cho danh từ đếm được)" },
+          { text: "Many", word: "many", ipa: "/ˈmen.i/", meaning: "nhiều (danh từ đếm được)" },
           { text: "learners", word: "learners", ipa: "/ˈlɜː.nəz/", meaning: "người học" },
           { text: "rush", word: "rush", ipa: "/rʌʃ/", meaning: "vội vàng, hấp tấp" },
           { text: "through", word: "through", ipa: "/θruː/", meaning: "xuyên suốt, qua" },
@@ -237,15 +242,15 @@
     const MENTOR_PRESETS = [
       {
         q: "Phân biệt 'make' và 'do' cho người Việt",
-        a: "• Dùng **make** khi tạo ra thứ mới, quyết định, sai lầm hoặc kế hoạch: *make a decision, make a mistake, make coffee*.\n• Dùng **do** khi làm công việc, nhiệm vụ, bài tập hoặc hành động chung chung: *do homework, do research, do your best*."
+        a: "Dùng make khi tạo ra thứ mới, quyết định, sai lầm hoặc kế hoạch: make a decision, make a mistake, make coffee.\nDùng do khi làm công việc, nhiệm vụ, bài tập hoặc hành động chung chung: do homework, do research, do your best."
       },
       {
         q: "Cách sửa lỗi Vietlish 'very like'",
-        a: "Người Việt hay dịch sát nghĩa 'rất thích' thành *very like*, nhưng trong tiếng Anh tự nhiên bạn nên nói:\n• *I **really like** learning English.*\n• *I **love** this song.*\n• *I'm **really into** reading.*"
+        a: "Người Việt hay dịch sát nghĩa 'rất thích' thành very like, nhưng trong tiếng Anh tự nhiên bạn nên dùng:\n• I really like learning English.\n• I love this song.\n• I'm really into reading."
       },
       {
         q: "Mẹo đọc âm cuối /s/ và /ed/ không bị nuốt âm",
-        a: "• Khi nói xong âm chính của từ (như *tasks, books, finished*), giữ lưỡi hoặc luồng hơi bật nhẹ thêm 1 nhịp ở cuối thay vì dừng đột ngột.\n• Luyện từng cụm ngắn chậm rãi rồi mới tăng tốc độ nói."
+        a: "• Khi nói xong âm chính của từ (như tasks, books, finished), giữ luồng hơi bật nhẹ thêm 1 nhịp ở cuối thay vì dừng đột ngột.\n• Luyện từng cụm ngắn chậm rãi rồi mới tăng tốc độ nói."
       }
     ];
 
@@ -313,27 +318,34 @@
       return issues;
     }
 
-    // --- PHẢN HỒI CỦA AI MENTOR TÍCH HỢP ---
+    // --- PHẢN HỒI CỦA AI MENTOR (KHÔNG DÙNG KÝ TỰ ** THÔ) ---
     function generateMentorReply(input) {
       const trimmed = input.trim();
       const matchedPreset = MENTOR_PRESETS.find(
-        (p) => p.q.toLowerCase().includes(trimmed.toLowerCase()) || trimmed.toLowerCase().includes(p.q.toLowerCase().slice(0, 12))
+        (p) =>
+          p.q.toLowerCase().includes(trimmed.toLowerCase()) ||
+          trimmed.toLowerCase().includes(p.q.toLowerCase().slice(0, 12))
       );
       if (matchedPreset) return matchedPreset.a;
 
       const issues = analyzeVietlish(trimmed);
       if (issues.length > 0) {
         return issues
-          .map((it) => `Mình thấy cụm **"${it.bad}"** -> nên đổi thành **"${it.fix}"**. Lý do: ${it.reason}`)
+          .map(
+            (it) =>
+              `Mình thấy cụm "${it.bad}" -> nên đổi thành "${it.fix}". Lý do: ${it.reason}`
+          )
           .join("\n\n");
       }
 
-      return `Gợi ý cho câu/từ **"${trimmed}"**:\n• Nếu bạn muốn diễn đạt tự nhiên hơn, hãy đặt câu ngắn gọn với chủ ngữ + động từ chính + tân ngữ.\n• Bạn có thể bấm nút **Nghe mẫu** hoặc chuyển sang tab **Viết / Nói** để luyện phản xạ trực tiếp (+10 XP).`;
+      const cleanWord = trimmed.replace(/^["']+|["']+$/g, "");
+      return `Gợi ý nhanh cho "${cleanWord}":\n• Hãy đặt từ/cụm này vào một câu ngắn gọn có chủ ngữ + động từ chính + tân ngữ để nhớ ngữ cảnh tự nhiên.\n• Bạn có thể bấm nút Nghe phát âm ở các tab Từ vựng, Nghe hoặc Nói để luyện phản xạ trực tiếp (+10 XP).`;
     }
 
     // --- ỨNG DỤNG CHÍNH ---
     function App() {
       const [activeTab, setActiveTab] = useState("dashboard");
+      const [menuOpen, setMenuOpen] = useState(false);
       const [xp, setXp] = useState(240);
       const [streak] = useState(5);
       const [savedWords, setSavedWords] = useState([
@@ -373,9 +385,13 @@
       const [mentorMessages, setMentorMessages] = useState([
         {
           role: "mentor",
-          text: "Chào bạn! Mình là **AI Mentor** của EngViet Studio. Bạn có thể hỏi cách dùng từ, sửa lỗi dịch kiểu tiếng Việt (Vietlish) hoặc chọn nhanh một chủ đề bên dưới."
+          text: "Chào bạn! Mình là AI Mentor của EngViet Studio. Hãy hỏi nghĩa từ, cách dùng tự nhiên hoặc dán câu tiếng Anh để mình sửa lỗi diễn đạt kiểu tiếng Việt (Vietlish)."
         }
       ]);
+
+      useEffect(() => {
+        setMenuOpen(false);
+      }, [activeTab]);
 
       const gainXp = (amount) => setXp((prev) => prev + amount);
 
@@ -450,14 +466,14 @@
         rec.start();
       };
 
-      const tabs = [
-        { id: "dashboard", label: "Tổng quan" },
-        { id: "mentor", label: "AI Mentor" },
-        { id: "vocab", label: "Từ vựng" },
-        { id: "listening", label: "Nghe" },
-        { id: "speaking", label: "Nói" },
-        { id: "reading", label: "Đọc" },
-        { id: "writing", label: "Viết" }
+      const menuItems = [
+        { id: "dashboard", label: "Tổng quan", desc: "Từ vựng ngày & sổ từ lưu" },
+        { id: "mentor", label: "AI Mentor", desc: "Hỏi đáp & sửa lỗi Vietlish" },
+        { id: "vocab", label: "Từ vựng", desc: "Flashcard 3D & trắc nghiệm" },
+        { id: "listening", label: "Nghe", desc: "Luyện nghe & chép chính tả" },
+        { id: "speaking", label: "Nói", desc: "Phát âm & ghi âm kiểm tra" },
+        { id: "reading", label: "Đọc", desc: "Chạm từng từ tra IPA & nghĩa" },
+        { id: "writing", label: "Viết", desc: "Viết đoạn & soi lỗi diễn đạt" }
       ];
 
       const currentLesson = LISTENING_LESSONS[lessonIdx];
@@ -467,129 +483,204 @@
       const wordCount = writingText.trim() ? writingText.trim().split(/\s+/).length : 0;
 
       return (
-        <div className="min-h-screen bg-slate-50 text-slate-800">
-          <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
-            <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm">
-                    EV
-                  </span>
-                  <h1 className="font-bold text-lg text-slate-900">EngViet Studio & AI Mentor</h1>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-medium">
-                    VN → EN
-                  </span>
+        <div className="min-h-screen text-slate-800 pb-10">
+          {/* Top Bar + Menu */}
+          <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                  aria-label="Mở menu điều hướng"
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-800 hover:text-indigo-700 border border-slate-200/80 transition shrink-0 font-bold text-base"
+                >
+                  {menuOpen ? "✕" : "☰"}
+                </button>
+
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-extrabold text-xs shrink-0">
+                      EV
+                    </span>
+                    <h1 className="font-extrabold text-base sm:text-lg text-slate-900 truncate">
+                      EngViet Studio
+                    </h1>
+                    <span className="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100">
+                      AI Mentor
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-slate-500 truncate">
+                    Không gian học tiếng Anh toàn diện cho người Việt
+                  </p>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  AI Mentor + Luyện đủ 4 kỹ năng & Từ vựng cho người Việt
-                </p>
               </div>
 
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-                  🔥 {streak} ngày
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-bold shrink-0">
+                <span className="px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80">
+                  🔥 {streak}d
                 </span>
-                <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                   ⚡ {xp} XP
                 </span>
-                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-                  📚 {savedWords.length} từ lưu
+                <span className="hidden md:inline-block px-2.5 py-1.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                  📚 {savedWords.length} từ
                 </span>
               </div>
             </div>
 
-            <nav className="max-w-5xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto">
-              {tabs.map((t) => (
+            {/* Thanh tab ngang */}
+            <nav className="max-w-6xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto no-scrollbar">
+              {menuItems.map((item) => (
                 <button
-                  key={t.id}
-                  onClick={() => setActiveTab(t.id)}
-                  className={`px-3.5 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition ${
-                    activeTab === t.id
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveTab(item.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition ${
+                    activeTab === item.id
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80"
                   }`}
                 >
-                  {t.label}
+                  {item.label}
                 </button>
               ))}
             </nav>
+
+            {/* Dropdown Menu đầy đủ khi bấm nút ☰ */}
+            {menuOpen && (
+              <div className="border-t border-slate-200 bg-white/98 backdrop-blur-md shadow-lg">
+                <div className="max-w-6xl mx-auto px-4 py-4 grid sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                  {menuItems.map((item) => {
+                    const active = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setActiveTab(item.id)}
+                        className={`p-3 rounded-xl text-left border transition ${
+                          active
+                            ? "bg-indigo-50 border-indigo-400 text-indigo-950"
+                            : "bg-slate-50/70 border-slate-200/80 hover:bg-slate-100 text-slate-800"
+                        }`}
+                      >
+                        <div className="font-bold text-sm">{item.label}</div>
+                        <div className="text-xs text-slate-500 mt-0.5">{item.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </header>
 
-          <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-            {/* 1. DASHBOARD */}
+          {/* Main Content */}
+          <main className="max-w-6xl mx-auto px-4 pt-6 space-y-6">
+            {/* 1. TỔNG QUAN */}
             {activeTab === "dashboard" && (
               <div className="space-y-6">
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="md:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
-                        Từ vựng mỗi ngày
+                <div className="grid lg:grid-cols-3 gap-5">
+                  <div className="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
+                        Từ vựng nổi bật hôm nay
                       </span>
                       <button
+                        type="button"
                         onClick={() => speakText(WORD_OF_THE_DAY.word)}
-                        className="px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold"
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition"
                       >
                         🔊 Nghe phát âm
                       </button>
                     </div>
+
                     <div className="flex flex-wrap items-baseline gap-3">
-                      <h2 className="text-3xl font-bold text-slate-900">{WORD_OF_THE_DAY.word}</h2>
-                      <span className="text-slate-500 text-sm">{WORD_OF_THE_DAY.ipa}</span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                        {WORD_OF_THE_DAY.word}
+                      </h2>
+                      <span className="text-slate-500 text-sm font-medium">{WORD_OF_THE_DAY.ipa}</span>
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold">
                         {WORD_OF_THE_DAY.pos}
                       </span>
                     </div>
-                    <p className="mt-2 text-slate-700 font-medium">{WORD_OF_THE_DAY.meaning}</p>
-                    <div className="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-                      <p className="text-sm text-slate-800 font-medium">"{WORD_OF_THE_DAY.example}"</p>
-                      <p className="text-xs text-slate-500 mt-1">{WORD_OF_THE_DAY.exampleVi}</p>
+
+                    <p className="mt-3 text-slate-700 font-semibold text-base">
+                      {WORD_OF_THE_DAY.meaning}
+                    </p>
+
+                    <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
+                      <p className="text-sm text-slate-900 font-semibold">
+                        "{WORD_OF_THE_DAY.example}"
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1.5">{WORD_OF_THE_DAY.exampleVi}</p>
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                  <div className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
-                      <h3 className="font-bold text-slate-900">Mục tiêu hôm nay</h3>
-                      <p className="text-xs text-slate-500 mt-1">Hỏi AI Mentor hoặc luyện từng kỹ năng</p>
-                      <div className="mt-4">
-                        <div className="flex justify-between text-xs font-semibold mb-1.5">
-                          <span>Tiến độ</span>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-indigo-200">
+                        Lộ trình hằng ngày
+                      </span>
+                      <h3 className="text-xl font-extrabold mt-1">Chạm mốc 300 XP</h3>
+                      <p className="text-xs text-indigo-100 mt-1.5 leading-relaxed">
+                        Hỏi AI Mentor, lật thẻ từ vựng hoặc luyện Nghe – Nói – Đọc – Viết để tích lũy điểm.
+                      </p>
+
+                      <div className="mt-5">
+                        <div className="flex justify-between text-xs font-bold mb-2">
+                          <span>Tiến độ hiện tại</span>
                           <span>{Math.min(100, Math.round((xp / 300) * 100))}%</span>
                         </div>
-                        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-indigo-600 rounded-full transition-all"
+                            className="h-full bg-amber-300 rounded-full transition-all duration-300"
                             style={{ width: `${Math.min(100, Math.round((xp / 300) * 100))}%` }}
                           />
                         </div>
                       </div>
                     </div>
+
                     <button
+                      type="button"
                       onClick={() => setActiveTab("mentor")}
-                      className="mt-5 w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition"
+                      className="mt-6 w-full py-3 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 text-sm font-extrabold transition shadow-xs"
                     >
-                      Trò chuyện với AI Mentor →
+                      Mở AI Mentor ngay →
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                  <h3 className="font-bold text-slate-900 mb-3">Sổ từ vựng đã lưu ({savedWords.length})</h3>
+                {/* Sổ từ đã lưu */}
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-extrabold text-lg text-slate-900">
+                      Sổ từ vựng đã lưu ({savedWords.length})
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("vocab")}
+                      className="text-xs font-bold text-indigo-600 hover:underline"
+                    >
+                      + Thêm từ mới
+                    </button>
+                  </div>
+
                   {savedWords.length === 0 ? (
-                    <p className="text-sm text-slate-500">Chưa có từ nào được lưu.</p>
+                    <p className="text-sm text-slate-500">Chưa có từ nào trong sổ lưu.</p>
                   ) : (
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3.5">
                       {savedWords.map((item, idx) => (
                         <div
                           key={idx}
-                          className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2"
+                          className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/70 flex items-center justify-between gap-3"
                         >
-                          <div>
-                            <div className="font-semibold text-slate-900 text-sm">{item.word}</div>
-                            <div className="text-xs text-slate-600">{item.meaning}</div>
+                          <div className="min-w-0">
+                            <div className="font-bold text-slate-900 text-sm truncate">{item.word}</div>
+                            <div className="text-xs text-slate-600 mt-0.5 line-clamp-2">{item.meaning}</div>
                           </div>
                           <button
+                            type="button"
                             onClick={() => speakText(item.word)}
-                            className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs hover:bg-slate-100"
+                            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100 shrink-0"
                           >
                             🔊
                           </button>
@@ -603,34 +694,35 @@
 
             {/* 2. AI MENTOR */}
             {activeTab === "mentor" && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-5">
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
-                    Trợ lý học tập cá nhân
+                  <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
+                    Trợ lý học tập thông minh
                   </span>
-                  <h2 className="text-xl font-bold text-slate-900 mt-1">AI Mentor cho người Việt</h2>
+                  <h2 className="text-2xl font-extrabold text-slate-900 mt-2">AI Mentor cho người Việt</h2>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   {MENTOR_PRESETS.map((preset, idx) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => sendMentorMessage(preset.q)}
-                      className="text-xs px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-semibold border border-indigo-200"
+                      className="text-xs px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-semibold border border-indigo-200/80 transition"
                     >
                       💡 {preset.q}
                     </button>
                   ))}
                 </div>
 
-                <div className="space-y-3 max-h-[380px] overflow-y-auto p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="space-y-3 max-h-[400px] overflow-y-auto p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
                   {mentorMessages.map((m, idx) => (
                     <div
                       key={idx}
-                      className={`p-3.5 rounded-2xl text-sm whitespace-pre-line ${
+                      className={`p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
                         m.role === "user"
-                          ? "bg-indigo-600 text-white ml-auto max-w-[82%]"
-                          : "bg-white text-slate-800 border border-slate-200 mr-auto max-w-[88%]"
+                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white ml-auto max-w-[82%] font-medium"
+                          : "bg-white text-slate-800 border border-slate-200/80 mr-auto max-w-[88%] shadow-2xs"
                       }`}
                     >
                       {m.text}
@@ -638,18 +730,19 @@
                   ))}
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2.5">
                   <input
                     type="text"
                     value={mentorInput}
                     onChange={(e) => setMentorInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMentorMessage()}
-                    placeholder="Nhập câu tiếng Anh cần sửa hoặc câu hỏi từ vựng..."
-                    className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Nhập câu tiếng Anh cần sửa hoặc từ vựng muốn hỏi..."
+                    className="flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
+                    type="button"
                     onClick={() => sendMentorMessage()}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold"
+                    className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-95 text-white text-sm font-bold shrink-0 transition"
                   >
                     Gửi (+10 XP)
                   </button>
@@ -657,20 +750,21 @@
               </div>
             )}
 
-            {/* 3. VOCABULARY */}
+            {/* 3. TỪ VỰNG */}
             {activeTab === "vocab" && (
               <div className="space-y-6">
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(VOCAB_DECKS).map((name) => (
                     <button
                       key={name}
+                      type="button"
                       onClick={() => {
                         setDeckName(name);
                         setCardIndex(0);
                         setFlipped(false);
                         setVocabQuizChoice(null);
                       }}
-                      className={`px-4 py-2 rounded-xl text-sm font-semibold border ${
+                      className={`px-4 py-2 rounded-xl text-sm font-bold border transition ${
                         deckName === name
                           ? "bg-slate-900 text-white border-slate-900"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
@@ -681,24 +775,28 @@
                   ))}
                 </div>
 
-                <div className="perspective-1000 max-w-xl mx-auto">
+                <div className="perspective-1000 max-w-2xl mx-auto">
                   <div
                     onClick={() => setFlipped(!flipped)}
-                    className={`relative min-h-[240px] cursor-pointer transition-transform duration-500 transform-style-3d ${
+                    className={`relative min-h-[250px] cursor-pointer transition-transform duration-500 transform-style-3d ${
                       flipped ? "rotate-y-180" : ""
                     }`}
                   >
-                    <div className="backface-hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between min-h-[240px]">
+                    <div className="backface-hidden bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between min-h-[250px]">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-medium">
+                        <span className="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold">
                           {currentCard.pos}
                         </span>
-                        <span className="text-xs text-slate-400">Chạm để lật thẻ</span>
+                        <span className="text-xs text-slate-400 font-medium">Chạm để lật thẻ</span>
                       </div>
+
                       <div className="text-center my-4">
-                        <h3 className="text-3xl font-bold text-slate-900">{currentCard.word}</h3>
-                        <p className="text-slate-500 mt-1">{currentCard.ipa}</p>
+                        <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                          {currentCard.word}
+                        </h3>
+                        <p className="text-slate-500 text-sm mt-1.5 font-medium">{currentCard.ipa}</p>
                       </div>
+
                       <div className="flex items-center justify-center gap-3">
                         <button
                           type="button"
@@ -706,7 +804,7 @@
                             e.stopPropagation();
                             speakText(currentCard.word);
                           }}
-                          className="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100"
+                          className="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-xs sm:text-sm font-bold hover:bg-indigo-100"
                         >
                           🔊 Nghe từ
                         </button>
@@ -716,19 +814,19 @@
                             e.stopPropagation();
                             toggleSaveWord(currentCard);
                           }}
-                          className="px-4 py-2 rounded-xl bg-amber-50 text-amber-700 text-sm font-semibold hover:bg-amber-100"
+                          className="px-4 py-2 rounded-xl bg-amber-50 text-amber-700 text-xs sm:text-sm font-bold hover:bg-amber-100"
                         >
                           ★ Lưu từ
                         </button>
                       </div>
                     </div>
 
-                    <div className="rotate-y-180 backface-hidden absolute inset-0 bg-indigo-600 text-white rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-                      <div className="text-xs uppercase tracking-wider text-indigo-200 font-semibold">
+                    <div className="rotate-y-180 backface-hidden absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                      <div className="text-xs uppercase tracking-wider text-indigo-200 font-bold">
                         Nghĩa tiếng Việt & Ví dụ
                       </div>
                       <div>
-                        <p className="text-2xl font-bold">{currentCard.meaning}</p>
+                        <p className="text-2xl font-extrabold">{currentCard.meaning}</p>
                         <p className="mt-3 text-sm text-indigo-100 italic">"{currentCard.example}"</p>
                         <p className="mt-1 text-xs text-indigo-200">{currentCard.exampleVi}</p>
                       </div>
@@ -738,36 +836,38 @@
 
                   <div className="mt-4 flex items-center justify-between">
                     <button
+                      type="button"
                       onClick={() => {
                         setFlipped(false);
                         setVocabQuizChoice(null);
                         setCardIndex((prev) => (prev - 1 + currentDeck.length) % currentDeck.length);
                       }}
-                      className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-semibold hover:bg-slate-50"
+                      className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm font-bold hover:bg-slate-50"
                     >
                       ← Từ trước
                     </button>
-                    <span className="text-xs text-slate-500 font-medium">
+                    <span className="text-xs text-slate-500 font-bold">
                       {(cardIndex % currentDeck.length) + 1} / {currentDeck.length}
                     </span>
                     <button
+                      type="button"
                       onClick={() => {
                         setFlipped(false);
                         setVocabQuizChoice(null);
                         setCardIndex((prev) => (prev + 1) % currentDeck.length);
                       }}
-                      className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+                      className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold hover:bg-indigo-700"
                     >
                       Từ tiếp theo →
                     </button>
                   </div>
 
-                  <div className="mt-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+                  <div className="mt-6 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-3">
                     <div className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                       Kiểm tra nhớ nghĩa nhanh
                     </div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      Từ "<span className="text-indigo-700">{currentCard.word}</span>" có nghĩa là gì?
+                    <p className="text-sm font-bold text-slate-900">
+                      Từ "{currentCard.word}" có nghĩa là gì?
                     </p>
                     <div className="space-y-2">
                       {currentCard.quizOptions.map((opt, idx) => {
@@ -776,11 +876,12 @@
                         return (
                           <button
                             key={idx}
+                            type="button"
                             onClick={() => {
                               if (vocabQuizChoice === null && isRight) gainXp(10);
                               setVocabQuizChoice(idx);
                             }}
-                            className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm font-medium transition ${
+                            className={`w-full text-left px-4 py-3 rounded-2xl border text-sm font-semibold transition ${
                               chosen
                                 ? isRight
                                   ? "bg-emerald-50 border-emerald-500 text-emerald-900"
@@ -798,23 +899,24 @@
               </div>
             )}
 
-            {/* 4. LISTENING */}
+            {/* 4. NGHE */}
             {activeTab === "listening" && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700">
                       {currentLesson.level}
                     </span>
-                    <h2 className="text-xl font-bold text-slate-900 mt-1">{currentLesson.title}</h2>
+                    <h2 className="text-2xl font-extrabold text-slate-900 mt-2">{currentLesson.title}</h2>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     {[0.75, 1.0, 1.25].map((r) => (
                       <button
                         key={r}
+                        type="button"
                         onClick={() => setSpeed(r)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border ${
                           speed === r
                             ? "bg-slate-900 text-white border-slate-900"
                             : "bg-white text-slate-600 border-slate-200"
@@ -824,21 +926,22 @@
                       </button>
                     ))}
                     <button
+                      type="button"
                       onClick={() => speakText(currentLesson.audioText, speed)}
-                      className="ml-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold"
+                      className="ml-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold"
                     >
                       ▶ Nghe ngay
                     </button>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900">
+                <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs sm:text-sm text-amber-950">
                   <strong>Mẹo nghe cho người Việt:</strong> {currentLesson.keyTips}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 mb-2">
-                    Chép chính tả những gì bạn nghe được:
+                  <label className="block text-sm font-bold text-slate-800 mb-2">
+                    Chép chính tả câu tiếng Anh bạn nghe được:
                   </label>
                   <textarea
                     rows={3}
@@ -848,32 +951,35 @@
                       setCheckedDictation(false);
                     }}
                     placeholder="Gõ câu tiếng Anh bạn vừa nghe..."
-                    className="w-full rounded-xl border border-slate-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-2xl border border-slate-300 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button
+                      type="button"
                       onClick={() => {
                         setCheckedDictation(true);
                         gainXp(15);
                       }}
-                      className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+                      className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold hover:bg-indigo-700"
                     >
                       Kiểm tra từng từ (+15 XP)
                     </button>
                     <button
+                      type="button"
                       onClick={() => setShowTranscript(!showTranscript)}
-                      className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200"
+                      className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold hover:bg-slate-200"
                     >
                       {showTranscript ? "Ẩn Transcript" : "Xem Transcript & Dịch"}
                     </button>
                     <button
+                      type="button"
                       onClick={() => {
                         setLessonIdx((prev) => (prev + 1) % LISTENING_LESSONS.length);
                         setDictation("");
                         setCheckedDictation(false);
                         setShowTranscript(false);
                       }}
-                      className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold hover:bg-slate-50"
+                      className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold hover:bg-slate-50"
                     >
                       Bài nghe khác →
                     </button>
@@ -881,8 +987,8 @@
                 </div>
 
                 {checkedDictation && (
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="text-xs font-semibold text-slate-500 mb-2">Đối chiếu từ vựng:</div>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div className="text-xs font-bold text-slate-500 mb-2">Đối chiếu từ vựng:</div>
                     <div className="flex flex-wrap gap-1.5">
                       {targetWordsList.map((tw, i) => {
                         const cleanTarget = tw.toLowerCase().replace(/[^a-z']/g, "");
@@ -891,7 +997,7 @@
                         return (
                           <span
                             key={i}
-                            className={`px-2 py-0.5 rounded text-xs font-medium ${
+                            className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
                               ok ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
                             }`}
                           >
@@ -904,53 +1010,58 @@
                 )}
 
                 {showTranscript && (
-                  <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 space-y-1">
-                    <p className="text-sm font-semibold text-slate-900">{currentLesson.audioText}</p>
-                    <p className="text-xs text-slate-600">{currentLesson.viTranscript}</p>
+                  <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 space-y-1">
+                    <p className="text-sm font-bold text-slate-900">{currentLesson.audioText}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">{currentLesson.viTranscript}</p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* 5. SPEAKING */}
+            {/* 5. NÓI */}
             {activeTab === "speaking" && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+                  <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
                     Luyện phát âm & âm cuối
                   </span>
                   <button
+                    type="button"
                     onClick={() => {
                       setSpeakIdx((prev) => (prev + 1) % SPEAKING_PROMPTS.length);
                       setSpokenResult("");
                       setSpeakScore(null);
                     }}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200"
+                    className="text-xs font-bold px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200"
                   >
                     Câu tiếp theo →
                   </button>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <p className="text-2xl font-bold text-slate-900">
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <p className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                     "{SPEAKING_PROMPTS[speakIdx].phrase}"
                   </p>
-                  <p className="text-sm text-slate-600 mt-1">{SPEAKING_PROMPTS[speakIdx].vi}</p>
-                  <p className="text-xs text-indigo-700 bg-indigo-50 inline-block px-3 py-1.5 rounded-lg mt-3 font-medium">
+                  <p className="text-sm text-slate-600 mt-1.5 font-medium">
+                    {SPEAKING_PROMPTS[speakIdx].vi}
+                  </p>
+                  <p className="text-xs text-indigo-800 bg-indigo-50 border border-indigo-100 inline-block px-3.5 py-2 rounded-xl mt-3 font-semibold">
                     💡 Lưu ý phát âm: {SPEAKING_PROMPTS[speakIdx].tip}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
                   <button
+                    type="button"
                     onClick={() => speakText(SPEAKING_PROMPTS[speakIdx].phrase, 0.9)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold"
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold"
                   >
                     🔊 Nghe mẫu
                   </button>
                   <button
+                    type="button"
                     onClick={handleRecord}
-                    className={`px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition ${
+                    className={`px-5 py-2.5 rounded-xl text-white text-sm font-bold transition ${
                       isRecording ? "bg-rose-600 hover:bg-rose-700" : "bg-indigo-600 hover:bg-indigo-700"
                     }`}
                   >
@@ -959,11 +1070,11 @@
                 </div>
 
                 {spokenResult && (
-                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
-                    <div className="text-xs text-slate-500">Hệ thống nhận diện:</div>
-                    <div className="text-sm font-semibold text-slate-900">"{spokenResult}"</div>
+                  <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-1">
+                    <div className="text-xs text-slate-500 font-semibold">Hệ thống nhận diện:</div>
+                    <div className="text-sm font-bold text-slate-900">"{spokenResult}"</div>
                     {speakScore !== null && (
-                      <div className="text-sm font-bold text-emerald-700 pt-1">
+                      <div className="text-sm font-extrabold text-emerald-700 pt-1">
                         Độ khớp ước lượng: {speakScore}% (+15 XP)
                       </div>
                     )}
@@ -972,37 +1083,41 @@
               </div>
             )}
 
-            {/* 6. READING */}
+            {/* 6. ĐỌC */}
             {activeTab === "reading" && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">
                       {READING_PASSAGES[0].level}
                     </span>
-                    <h2 className="text-xl font-bold text-slate-900 mt-1">{READING_PASSAGES[0].title}</h2>
+                    <h2 className="text-2xl font-extrabold text-slate-900 mt-2">
+                      {READING_PASSAGES[0].title}
+                    </h2>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setShowBilingual(!showBilingual)}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold hover:bg-slate-50"
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold hover:bg-slate-50"
                   >
                     {showBilingual ? "Ẩn bản dịch Việt" : "Hiện bản dịch Việt"}
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-500">
-                  Chạm vào từng từ tiếng Anh để xem phiên âm IPA và nghĩa tiếng Việt:
+                <p className="text-xs text-slate-500 font-medium">
+                  Chạm vào từng từ tiếng Anh để xem phiên âm IPA, nghe đọc và xem nghĩa tiếng Việt:
                 </p>
 
-                <div className="flex flex-wrap gap-x-1.5 gap-y-2 text-lg leading-relaxed p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex flex-wrap gap-x-1.5 gap-y-2 text-lg leading-relaxed p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
                   {READING_PASSAGES[0].tokens.map((tok, i) => (
                     <button
                       key={i}
+                      type="button"
                       onClick={() => {
                         setSelectedToken(tok);
                         speakText(tok.word);
                       }}
-                      className={`px-1 rounded transition ${
+                      className={`px-1.5 py-0.5 rounded-lg transition font-medium ${
                         selectedToken?.text === tok.text
                           ? "bg-indigo-600 text-white"
                           : "hover:bg-indigo-100 text-slate-900"
@@ -1014,15 +1129,18 @@
                 </div>
 
                 {selectedToken && (
-                  <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex flex-wrap items-center justify-between gap-3">
+                  <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <span className="font-bold text-slate-900">{selectedToken.word}</span>{" "}
-                      <span className="text-xs text-slate-600">{selectedToken.ipa}</span>
-                      <p className="text-sm text-indigo-900 font-medium mt-0.5">{selectedToken.meaning}</p>
+                      <span className="font-extrabold text-slate-900">{selectedToken.word}</span>{" "}
+                      <span className="text-xs text-slate-600 font-medium">{selectedToken.ipa}</span>
+                      <p className="text-sm text-indigo-950 font-semibold mt-0.5">
+                        {selectedToken.meaning}
+                      </p>
                     </div>
                     <button
+                      type="button"
                       onClick={() => toggleSaveWord(selectedToken)}
-                      className="px-3 py-1.5 rounded-lg bg-white border border-indigo-200 text-xs font-semibold text-indigo-700"
+                      className="px-3.5 py-2 rounded-xl bg-white border border-indigo-200 text-xs font-bold text-indigo-700"
                     >
                       ★ Lưu vào sổ từ
                     </button>
@@ -1030,13 +1148,15 @@
                 )}
 
                 {showBilingual && (
-                  <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-sm text-emerald-950">
+                  <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-sm text-emerald-950">
                     <strong>Bản dịch:</strong> {READING_PASSAGES[0].viFull}
                   </div>
                 )}
 
-                <div className="pt-2 border-t border-slate-200 space-y-2.5">
-                  <p className="text-sm font-bold text-slate-900">{READING_PASSAGES[0].question}</p>
+                <div className="pt-3 border-t border-slate-200 space-y-2.5">
+                  <p className="text-sm font-extrabold text-slate-900">
+                    {READING_PASSAGES[0].question}
+                  </p>
                   <div className="space-y-2">
                     {READING_PASSAGES[0].options.map((opt, idx) => {
                       const chosen = readingChoice === idx;
@@ -1044,11 +1164,12 @@
                       return (
                         <button
                           key={idx}
+                          type="button"
                           onClick={() => {
                             if (readingChoice === null) gainXp(10);
                             setReadingChoice(idx);
                           }}
-                          className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm font-medium transition ${
+                          className={`w-full text-left px-4 py-3 rounded-2xl border text-sm font-semibold transition ${
                             chosen
                               ? isCorrect
                                 ? "bg-emerald-50 border-emerald-500 text-emerald-900"
@@ -1065,22 +1186,25 @@
               </div>
             )}
 
-            {/* 7. WRITING */}
+            {/* 7. VIẾT */}
             {activeTab === "writing" && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-5">
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+                  <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
                     Luyện viết & tránh lỗi Vietlish
                   </span>
-                  <h2 className="text-xl font-bold text-slate-900 mt-1">{WRITING_PROMPTS[0].title}</h2>
+                  <h2 className="text-2xl font-extrabold text-slate-900 mt-2">
+                    {WRITING_PROMPTS[0].title}
+                  </h2>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   {WRITING_PROMPTS[0].starters.map((st, idx) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => setWritingText((prev) => (prev ? `${prev} ${st}` : st))}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium"
+                      className="text-xs px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold"
                     >
                       + "{st}"
                     </button>
@@ -1092,14 +1216,15 @@
                   value={writingText}
                   onChange={(e) => setWritingText(e.target.value)}
                   placeholder="Viết đoạn tiếng Anh của bạn tại đây..."
-                  className="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-2xl border border-slate-300 p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
 
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>Số từ: <strong>{wordCount}</strong></span>
+                <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
+                  <span>Số từ: {wordCount}</span>
                   <button
+                    type="button"
                     onClick={() => setWritingText(WRITING_PROMPTS[0].sample)}
-                    className="text-indigo-600 font-semibold hover:underline"
+                    className="text-indigo-600 font-bold hover:underline"
                   >
                     Chèn đoạn mẫu tham khảo
                   </button>
@@ -1111,9 +1236,12 @@
                       Gợi ý chỉnh lỗi diễn đạt kiểu tiếng Việt (Vietlish):
                     </div>
                     {vietlishIssues.map((issue, idx) => (
-                      <div key={idx} className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-1">
+                      <div
+                        key={idx}
+                        className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs sm:text-sm space-y-1"
+                      >
                         <div className="font-bold text-amber-950">
-                          Phát hiện "{issue.bad}" → Nên dùng: <span className="text-emerald-800">{issue.fix}</span>
+                          Phát hiện "{issue.bad}" → Nên dùng: {issue.fix}
                         </div>
                         <p className="text-amber-900">{issue.reason}</p>
                       </div>
