@@ -1,1 +1,36 @@
+    // --- HÀM ĐỌC PHÁT ÂM (TTS - TỐI ƯU) ---
+    let cachedVoices = [];
+
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const loadVoices = () => {
+        cachedVoices = window.speechSynthesis.getVoices() || [];
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speakText(text, rate = 1.0) {
+      if (!text || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+      const synth = window.speechSynthesis;
+      if (synth.paused) {
+        synth.resume();
+      }
+
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-US";
+      utter.rate = rate;
+      utter.volume = 1.0;
+
+      const voices = cachedVoices.length ? cachedVoices : synth.getVoices();
+      const englishVoice =
+        voices.find((v) => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith("en-us")) ||
+        voices.find((v) => v.lang && v.lang.toLowerCase().replace("_", "-").startsWith("en"));
+
+      if (englishVoice) {
+        utter.voice = englishVoice;
+      }
+
+      synth.speak(utter);
+    }
 
