@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EngViet Studio - Học Tiếng Anh Toàn Diện cho Người Việt</title>
+  <title>EngViet Studio & AI Mentor - Học Tiếng Anh cho Người Việt</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -234,6 +234,21 @@
       }
     ];
 
+    const MENTOR_PRESETS = [
+      {
+        q: "Phân biệt 'make' và 'do' cho người Việt",
+        a: "• Dùng **make** khi tạo ra thứ mới, quyết định, sai lầm hoặc kế hoạch: *make a decision, make a mistake, make coffee*.\n• Dùng **do** khi làm công việc, nhiệm vụ, bài tập hoặc hành động chung chung: *do homework, do research, do your best*."
+      },
+      {
+        q: "Cách sửa lỗi Vietlish 'very like'",
+        a: "Người Việt hay dịch sát nghĩa 'rất thích' thành *very like*, nhưng trong tiếng Anh tự nhiên bạn nên nói:\n• *I **really like** learning English.*\n• *I **love** this song.*\n• *I'm **really into** reading.*"
+      },
+      {
+        q: "Mẹo đọc âm cuối /s/ và /ed/ không bị nuốt âm",
+        a: "• Khi nói xong âm chính của từ (như *tasks, books, finished*), giữ lưỡi hoặc luồng hơi bật nhẹ thêm 1 nhịp ở cuối thay vì dừng đột ngột.\n• Luyện từng cụm ngắn chậm rãi rồi mới tăng tốc độ nói."
+      }
+    ];
+
     // --- HÀM ĐỌC PHÁT ÂM (TTS - TỐI ƯU CHO IPAD / SAFARI) ---
     let cachedVoices = [];
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -298,6 +313,24 @@
       return issues;
     }
 
+    // --- PHẢN HỒI CỦA AI MENTOR TÍCH HỢP ---
+    function generateMentorReply(input) {
+      const trimmed = input.trim();
+      const matchedPreset = MENTOR_PRESETS.find(
+        (p) => p.q.toLowerCase().includes(trimmed.toLowerCase()) || trimmed.toLowerCase().includes(p.q.toLowerCase().slice(0, 12))
+      );
+      if (matchedPreset) return matchedPreset.a;
+
+      const issues = analyzeVietlish(trimmed);
+      if (issues.length > 0) {
+        return issues
+          .map((it) => `Mình thấy cụm **"${it.bad}"** -> nên đổi thành **"${it.fix}"**. Lý do: ${it.reason}`)
+          .join("\n\n");
+      }
+
+      return `Gợi ý cho câu/từ **"${trimmed}"**:\n• Nếu bạn muốn diễn đạt tự nhiên hơn, hãy đặt câu ngắn gọn với chủ ngữ + động từ chính + tân ngữ.\n• Bạn có thể bấm nút **Nghe mẫu** hoặc chuyển sang tab **Viết / Nói** để luyện phản xạ trực tiếp (+10 XP).`;
+    }
+
     // --- ỨNG DỤNG CHÍNH ---
     function App() {
       const [activeTab, setActiveTab] = useState("dashboard");
@@ -335,6 +368,15 @@
       // Writing state
       const [writingText, setWritingText] = useState("");
 
+      // AI Mentor state
+      const [mentorInput, setMentorInput] = useState("");
+      const [mentorMessages, setMentorMessages] = useState([
+        {
+          role: "mentor",
+          text: "Chào bạn! Mình là **AI Mentor** của EngViet Studio. Bạn có thể hỏi cách dùng từ, sửa lỗi dịch kiểu tiếng Việt (Vietlish) hoặc chọn nhanh một chủ đề bên dưới."
+        }
+      ]);
+
       const gainXp = (amount) => setXp((prev) => prev + amount);
 
       const toggleSaveWord = (item) => {
@@ -344,6 +386,19 @@
           gainXp(10);
           return [...prev, { word: item.word, meaning: item.meaning }];
         });
+      };
+
+      const sendMentorMessage = (customText) => {
+        const textToSend = (typeof customText === "string" ? customText : mentorInput).trim();
+        if (!textToSend) return;
+        const reply = generateMentorReply(textToSend);
+        setMentorMessages((prev) => [
+          ...prev,
+          { role: "user", text: textToSend },
+          { role: "mentor", text: reply }
+        ]);
+        if (typeof customText !== "string") setMentorInput("");
+        gainXp(10);
       };
 
       const currentDeck = VOCAB_DECKS[deckName];
@@ -397,6 +452,7 @@
 
       const tabs = [
         { id: "dashboard", label: "Tổng quan" },
+        { id: "mentor", label: "AI Mentor" },
         { id: "vocab", label: "Từ vựng" },
         { id: "listening", label: "Nghe" },
         { id: "speaking", label: "Nói" },
@@ -412,7 +468,6 @@
 
       return (
         <div className="min-h-screen bg-slate-50 text-slate-800">
-          {/* Header */}
           <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
             <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -420,13 +475,13 @@
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm">
                     EV
                   </span>
-                  <h1 className="font-bold text-lg text-slate-900">EngViet Studio</h1>
+                  <h1 className="font-bold text-lg text-slate-900">EngViet Studio & AI Mentor</h1>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-medium">
                     VN → EN
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Luyện đủ 4 kỹ năng + Từ vựng & phản xạ cho người Việt
+                  AI Mentor + Luyện đủ 4 kỹ năng & Từ vựng cho người Việt
                 </p>
               </div>
 
@@ -443,7 +498,6 @@
               </div>
             </div>
 
-            {/* Navigation */}
             <nav className="max-w-5xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto">
               {tabs.map((t) => (
                 <button
@@ -461,7 +515,6 @@
             </nav>
           </header>
 
-          {/* Main Content */}
           <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
             {/* 1. DASHBOARD */}
             {activeTab === "dashboard" && (
@@ -496,7 +549,7 @@
                   <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                       <h3 className="font-bold text-slate-900">Mục tiêu hôm nay</h3>
-                      <p className="text-xs text-slate-500 mt-1">Tích lũy XP qua từng bài luyện tập</p>
+                      <p className="text-xs text-slate-500 mt-1">Hỏi AI Mentor hoặc luyện từng kỹ năng</p>
                       <div className="mt-4">
                         <div className="flex justify-between text-xs font-semibold mb-1.5">
                           <span>Tiến độ</span>
@@ -511,15 +564,14 @@
                       </div>
                     </div>
                     <button
-                      onClick={() => setActiveTab("vocab")}
+                      onClick={() => setActiveTab("mentor")}
                       className="mt-5 w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition"
                     >
-                      Bắt đầu học từ vựng →
+                      Trò chuyện với AI Mentor →
                     </button>
                   </div>
                 </div>
 
-                {/* Sổ từ đã lưu */}
                 <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                   <h3 className="font-bold text-slate-900 mb-3">Sổ từ vựng đã lưu ({savedWords.length})</h3>
                   {savedWords.length === 0 ? (
@@ -549,7 +601,63 @@
               </div>
             )}
 
-            {/* 2. VOCABULARY */}
+            {/* 2. AI MENTOR */}
+            {activeTab === "mentor" && (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+                    Trợ lý học tập cá nhân
+                  </span>
+                  <h2 className="text-xl font-bold text-slate-900 mt-1">AI Mentor cho người Việt</h2>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {MENTOR_PRESETS.map((preset, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => sendMentorMessage(preset.q)}
+                      className="text-xs px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-semibold border border-indigo-200"
+                    >
+                      💡 {preset.q}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-3 max-h-[380px] overflow-y-auto p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  {mentorMessages.map((m, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3.5 rounded-2xl text-sm whitespace-pre-line ${
+                        m.role === "user"
+                          ? "bg-indigo-600 text-white ml-auto max-w-[82%]"
+                          : "bg-white text-slate-800 border border-slate-200 mr-auto max-w-[88%]"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={mentorInput}
+                    onChange={(e) => setMentorInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMentorMessage()}
+                    placeholder="Nhập câu tiếng Anh cần sửa hoặc câu hỏi từ vựng..."
+                    className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    onClick={() => sendMentorMessage()}
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold"
+                  >
+                    Gửi (+10 XP)
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* 3. VOCABULARY */}
             {activeTab === "vocab" && (
               <div className="space-y-6">
                 <div className="flex flex-wrap gap-2">
@@ -573,7 +681,6 @@
                   ))}
                 </div>
 
-                {/* Flashcard 3D */}
                 <div className="perspective-1000 max-w-xl mx-auto">
                   <div
                     onClick={() => setFlipped(!flipped)}
@@ -655,7 +762,6 @@
                     </button>
                   </div>
 
-                  {/* Quick Recall Quiz */}
                   <div className="mt-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
                     <div className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                       Kiểm tra nhớ nghĩa nhanh
@@ -692,7 +798,7 @@
               </div>
             )}
 
-            {/* 3. LISTENING */}
+            {/* 4. LISTENING */}
             {activeTab === "listening" && (
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -806,7 +912,7 @@
               </div>
             )}
 
-            {/* 4. SPEAKING */}
+            {/* 5. SPEAKING */}
             {activeTab === "speaking" && (
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
                 <div className="flex items-center justify-between">
@@ -866,7 +972,7 @@
               </div>
             )}
 
-            {/* 5. READING */}
+            {/* 6. READING */}
             {activeTab === "reading" && (
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -929,7 +1035,6 @@
                   </div>
                 )}
 
-                {/* Câu hỏi đọc hiểu */}
                 <div className="pt-2 border-t border-slate-200 space-y-2.5">
                   <p className="text-sm font-bold text-slate-900">{READING_PASSAGES[0].question}</p>
                   <div className="space-y-2">
@@ -960,7 +1065,7 @@
               </div>
             )}
 
-            {/* 6. WRITING */}
+            {/* 7. WRITING */}
             {activeTab === "writing" && (
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
                 <div>
